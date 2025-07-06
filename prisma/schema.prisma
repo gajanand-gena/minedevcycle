@@ -1,0 +1,61 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("database_url")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model BusinessPartner {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  faces Face[]
+}
+
+model Face {
+  id        Int     @id @default(autoincrement())
+  level     Float
+  faceId    String
+  partner   BusinessPartner @relation(fields: [partnerId], references: [id])
+  partnerId Int
+  entries   Entry[]
+}
+
+model ActivityType {
+  id               Int    @id @default(autoincrement())
+  name             String @unique
+  benchmarkMinutes Int
+  entries          Entry[]
+}
+
+model Shift {
+  id      Int     @id @default(autoincrement())
+  name    String  @unique
+  entries Entry[]
+}
+
+model Entry {
+  id              Int          @id @default(autoincrement())
+  face            Face         @relation(fields: [faceId], references: [id])
+  faceId          Int
+  activityType    ActivityType @relation(fields: [activityTypeId], references: [id])
+  activityTypeId  Int
+  shift           Shift        @relation(fields: [shiftId], references: [id])
+  shiftId         Int
+  operator        String
+  equipment       String?
+  holesDrilled    Int?
+  bucketsFilled   Int?
+  bucketsLeft     Int?
+  meshCount       Int?
+  boltsDrilled    Int?
+  boltsGrouted    Int?
+  splitSets       Int?
+  capsules        Int?
+  startTime       DateTime
+  endTime         DateTime
+  breakdown       Boolean      @default(false)
+  breakdownNotes  String?
+  notes           String?
+}
